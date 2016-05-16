@@ -31,9 +31,9 @@ function getDeltaTime()
 
 var SCREEN_WIDTH = canvas.width;
 var SCREEN_HEIGHT = canvas.height;
-var LAYER_COUNT = 2;
-var LAYER_PLATFORMS = 0;
-var LAYER_LADDERS = 1;
+var LAYER_COUNT = 3;
+var LAYER_PLATFORMS = 1;
+var LAYER_LADDERS = 2;
 var MAP = {tw:29,th:18}
 var TILE = 35;
 var TILESET_TILE = TILE*2;
@@ -54,36 +54,13 @@ var FRICTION = MAXDX*6;
 var JUMP = METER*1500;
 var score = 0;
 var HP = 32;
+var HPTimer = 0;
+
+
+
 
 var Health = document.createElement("img");
 Health.src = "HP.jpg"
-/*function initialise() 
-{
-	for(var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++)
-	{
-		cells[layerIdx] = [];
-		var idx = 0;
-		for(var y = 0; y < level1.layers[layerIdx].height; y++)
-		{
-			cells[layerIdx][y] = [];
-			for(var x=0;x>level1.layers[layerIdx].width; x++)
-			{
-				if(level1.layers[layerIdx].data[idx] != 0)
-				{
-					cells[layerIdx][y][x] = 1;
-					cells[layerIdx][y-1][x] = 1;
-					cells[layerIdx][y-1][x+1] = 1;
-					cells[layerIdx][y][x+1] = 1;
-				}
-				else if (cells[layerIdx][y][x] != 1)
-				{
-					cells[layeridx][y][x] = 0;
-				}
-				idx++;
-			}
-		}
-	}
-}*/
 function initialise() //define the function
 {
     for (var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++)
@@ -125,26 +102,34 @@ var fpsTime = 0;
 var player = new Player();
 var keyboard = new Keyboard();
 
-function cellAtPixelCoord(layer, x, y)
+function cellAtPixelCoord(layer, x,y)
 {
-	if(x<0 || x>SCREEN_WIDTH)
-		return 1;
+	if(x<0 || x>SCREEN_WIDTH || y<0) // remove ‘|| y<0’
+	return 1;
+	// let the player drop of the bottom of the screen
+	// (this means death)
 	if(y>SCREEN_HEIGHT)
-		return 0;
+	return 0;
 	return cellAtTileCoord(layer, p2t(x), p2t(y));
-}
-
-function cellAtTileCoord(layer, tx, ty)
+};
+function cellAtTileCoord(layer, tx, ty) // remove ‘|| y<0’
 {
-	if(tx<0 || tx>MAP.tw)
+	if(tx<0 || tx>=MAP.tw || ty<0)
+	return 1;
+	// let the player drop of the bottom of the screen
+	// (this means death)
+	if(ty>=MAP.th)
 		return 1;
-	//this will make screen drop mean death, will probably change
-	if(ty>MAP.th)
-	{
-		return 1;
-		HP -= 5;
-	}
+	if(ty>=MAP.th-1)
+		loseHP();
 	return cells[layer][ty][tx];
+};
+function loseHP()
+{
+	if(HPTimer <= 0){
+		HP -= 5
+		HPTimer = 1
+	}
 }
 
 function tileToPixel(tile)
@@ -166,25 +151,49 @@ function bound (value, min, max)
 	return value;
 }
 
+var worldOffsetX =0;
+
+
 function drawMap()
 {
-	for(var layerIdx=0; layerIdx<LAYER_COUNT; layerIdx++)
+	var startX = -1;
+	var maxTiles = Math.floor(SCREEN_WIDTH / TILE) + 2;
+	var tileX = pixelToTile(player.position.x);
+	var offsetX = TILE + Math.floor(player.position.x%TILE);
+	startX = tileX - Math.floor(maxTiles / 2);
+
+	if(startX < -1)
 	{
-		var idx = 0;
+		startX = 0;
+		offsetX = 0;
+	}
+	if(startX > MAP.tw - maxTiles)
+	{
+		startX = MAP.tw - maxTiles + 1;
+		offsetX = TILE;
+	}
+	worldOffsetX = startX * TILE + offsetX;
+
+	for( var layerIdx=0; layerIdx < LAYER_COUNT; layerIdx++ )
+	{
 		for( var y = 0; y < level1.layers[layerIdx].height; y++ )
 		{
-			for( var x = 0; x < level1.layers[layerIdx].width; x++ )
+			var idx = y * level1.layers[layerIdx].width + startX;
+			for( var x = startX; x < startX + maxTiles; x++ )
 			{
 				if( level1.layers[layerIdx].data[idx] != 0 )
 				{
-// the tiles in the Tiled map are base 1 (meaning a value of 0 means no tile), so subtract one from the tileset id to get the
-// correct tile
+					// the tiles in the Tiled map are base 1 (meaning a value of 0 means no tile),
+					// so subtract one from the tileset id to get the correct tile
 					var tileIndex = level1.layers[layerIdx].data[idx] - 1;
-					var sx = TILESET_PADDING + (tileIndex % TILESET_COUNT_X) * (TILESET_TILE + TILESET_SPACING);
-					var sy = TILESET_PADDING + (Math.floor(tileIndex / TILESET_COUNT_Y)) * (TILESET_TILE + TILESET_SPACING);
-					context.drawImage(tileset, sx, sy, TILESET_TILE, TILESET_TILE, x*TILE, (y-1)*TILE, TILESET_TILE, TILESET_TILE);
+					var sx = TILESET_PADDING + (tileIndex % TILESET_COUNT_X) *
+					(TILESET_TILE + TILESET_SPACING);
+					var sy = TILESET_PADDING + (Math.floor(tileIndex / TILESET_COUNT_Y)) *
+					(TILESET_TILE + TILESET_SPACING);
+					context.drawImage(tileset, sx, sy, TILESET_TILE, TILESET_TILE,
+					(x-startX)*TILE - offsetX, (y-1)*TILE, TILESET_TILE, TILESET_TILE);
 				}
-				idx++;
+			idx++;
 			}
 		}
 	}
@@ -194,8 +203,8 @@ function run()
 	context.fillStyle = "#ccc";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 	var deltaTime = getDeltaTime();
-	drawMap();
 	player.update(deltaTime);
+	drawMap();
 	player.draw();
 	// update the frame counter
 	fpsTime += deltaTime;
@@ -218,6 +227,8 @@ function run()
 	context.fillRect(20, 145, 40, 355)
 	context.fillRect(35, 105, 10, 40)
 	context.fillRect(20, 120, 40, 10)
+	if (HPTimer > 0)
+		HPTimer -= deltaTime
 	for(var i=0; i<HP; i++)
 	{
 		context.drawImage(Health, 23, 488 - ((Health.height + 2)*i))

@@ -74,7 +74,7 @@ Player.prototype.update = function(deltaTime)
 			}
 		}
 	}
-	if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true) {
+	if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true /*&& this.falling = false*/) {
 	jump = true;
 	if(left == true) {
 		this.sprite.setAnimation(ANIM_JUMP_LEFT);
@@ -180,7 +180,7 @@ Player.prototype.update = function(deltaTime)
 
 Player.prototype.draw = function()
 {
-	this.sprite.draw(context, this.position.x, this.position.y);
+	this.sprite.draw(context, this.position.x - worldOffsetX, this.position.y);
 /*	context.save();
 		context.translate(this.position.x, this.position.y);
 		context.rotate(this.rotation);
