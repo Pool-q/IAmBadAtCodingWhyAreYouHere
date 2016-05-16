@@ -45,23 +45,23 @@ var tileset = document.createElement("img");
 tileset.src = "tileset.png";
 var cells =[];
 var METER = TILE;
-var GRAVITY = METER*9.8*6;
+var GRAVITY = METER*9.8*2;
 //max speeds
 var MAXDX = METER*10;
 var MAXDY = METER*15;
 var ACCEL = MAXDX*2;
 var FRICTION = MAXDX*6;
 var JUMP = METER*1500;
-function initialise() 
+/*function initialise() 
 {
 	for(var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++)
 	{
 		cells[layerIdx] = [];
 		var idx = 0;
-		for(var y=0; y<level1.layers[layerIdx].height; y++)
+		for(var y = 0; y < level1.layers[layerIdx].height; y++)
 		{
-			cells[layerIdx][y] = []
-			for(x=0;x>level1.layers[layerIdx].width; x++)
+			cells[layerIdx][y] = [];
+			for(var x=0;x>level1.layers[layerIdx].width; x++)
 			{
 				if(level1.layers[layerIdx].data[idx] != 0)
 				{
@@ -78,8 +78,38 @@ function initialise()
 			}
 		}
 	}
+}*/
+function initialise() //define the function
+{
+    for (var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++)
+    { // initialize the collision map
+        cells[layerIdx] = [];
+        var idx = 0;
+        for (var y = 0; y < level1.layers[layerIdx].height; y++)
+        {
+            cells[layerIdx][y] = [];
+            for (var x = 0; x < level1.layers[layerIdx].width; x++)
+            {
+                if (level1.layers[layerIdx].data[idx] != 0)
+                {
+                    // for each tile we find in the layer data, we need to create 4 collisions
+                    // (because our collision squares are 35x35 but the tile in the
+                    // level are 70x70)
+                    cells[layerIdx][y][x] = 1;
+                    cells[layerIdx][y - 1][x] = 1;
+                    cells[layerIdx][y - 1][x + 1] = 1;
+                    cells[layerIdx][y][x + 1] = 1;
+                }
+                else if (cells[layerIdx][y][x] != 1)
+                {
+                    // if we haven't set this cell's value, then set it to 0 now
+                    cells[layerIdx][y][x] = 0;
+                }
+                idx++;
+            }
+        }
+    }
 }
-
 // some variables to calculate the Frames Per Second (FPS - this tells use
 // how fast our game is running, and allows us to make the game run at a 
 // constant speed)
