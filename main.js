@@ -52,6 +52,11 @@ var MAXDY = METER*15;
 var ACCEL = MAXDX*2;
 var FRICTION = MAXDX*6;
 var JUMP = METER*1500;
+var score = 0;
+var HP = 32;
+
+var Health = document.createElement("img");
+Health.src = "HP.jpg"
 /*function initialise() 
 {
 	for(var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++)
@@ -135,7 +140,10 @@ function cellAtTileCoord(layer, tx, ty)
 		return 1;
 	//this will make screen drop mean death, will probably change
 	if(ty>MAP.th)
-		return 0;
+	{
+		return 1;
+		HP -= 5;
+	}
 	return cells[layer][ty][tx];
 }
 
@@ -198,10 +206,22 @@ function run()
 		fps = fpsCount;
 		fpsCount = 0;
 	}
+	// score
+	context.fillStyle = "yellow";
+	context.font="32px Arial";
+	var scoreText = "Score: " + score;
+	context.fillText(scoreText, SCREEN_WIDTH - 170, 35);
 	// draw the FPS
-	context.fillStyle = "#f00";
+	context.fillStyle = "#f11";
 	context.font="14px Arial";
 	context.fillText("FPS: " + fps, 5, 20, 100);
+	context.fillRect(20, 145, 40, 355)
+	context.fillRect(35, 105, 10, 40)
+	context.fillRect(20, 120, 40, 10)
+	for(var i=0; i<HP; i++)
+	{
+		context.drawImage(Health, 23, 488 - ((Health.height + 2)*i))
+	}
 }
 
 initialise();
