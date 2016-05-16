@@ -1,12 +1,13 @@
 var Player = function() {
 	this.image = document.createElement("img");
-	this.position = new Vector2(0,0);
-//	this.position.set(0,0);
+	this.position = new Vector2();
+	this.position.set(9*TILE, 0*TILE);
 	this.width = 159;
 	this.height = 163;
-	this.offset = new Vector2(-55, -87);
-//	this.offset.set(-55, -87);
+	this.offset = new Vector2();
+	this.offset.set(-55, -87);
 	this.velocity = new Vector2();
+	this.velocity.set(0, 0);
 	this.falling = true;
 	this.jumping = false;
 	this.image.src = "hero.png";
