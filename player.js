@@ -34,6 +34,8 @@ var Player = function() {
 	this.velocity.set(0, 0);
 	this.falling = true;
 	this.jumping = false;
+	this.cooldownTimer = 0;
+	this.isAlive = true;
 
 };
 Player.prototype.update = function(deltaTime)
@@ -74,7 +76,7 @@ Player.prototype.update = function(deltaTime)
 			}
 		}
 	}
-	if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true /*&& this.falling = false*/) {
+	if(keyboard.isKeyDown(keyboard.KEY_UP) == true /*&& this.falling = false*/) {
 	jump = true;
 	if(left == true) {
 		this.sprite.setAnimation(ANIM_JUMP_LEFT);
@@ -82,6 +84,25 @@ Player.prototype.update = function(deltaTime)
 	if(right == true) {
 		this.sprite.setAnimation(ANIM_JUMP_RIGHT);
 	} 
+	if(this.cooldownTimer > 0)
+	{
+		this.cooldownTimer -= deltaTime;
+	}
+	}
+	if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true && this.cooldownTimer <= 0) {
+		fireSFX.play();
+		this.cooldownTimer = 0.3;
+		if(RIGHT == 1)
+		{
+			var b = new Bullet(this.position.x, this.position.y - 20, true);
+			bullets.push(b);
+		}
+		if(LEFT == 1)
+		{
+			var b = new Bullet(this.position.x, this.position.y - 20, false);
+			bullets.push(b);
+		}
+		// Shoot a bullet
 	}
 
 	var wasleft = this.velocity.x < 0;
@@ -175,6 +196,11 @@ Player.prototype.update = function(deltaTime)
 			this.position.x = tileToPixel(tx + 1);
 			this.velocity.x = 0; // stop horizontal velocity
 		}
+	}
+	if(cellAtTileCoord(LAYER_OBJECT_TRIGGERS, tx, ty) == true)
+	{
+	win = true
+	console.log("win");
 	}
 }
 
