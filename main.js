@@ -71,6 +71,7 @@ var STATE_WIN = 2;
 var STATE_LOSE = 3;
 var gameState = STATE_SPLASH;
 var splashTimer = 3;
+var reloadTimer = 0;
 
 var ammunition = document.createElement("img");
 ammunition.src = "AMMO.jpg"
@@ -170,20 +171,16 @@ var keyboard = new Keyboard();
 
 function cellAtPixelCoord(layer, x,y)
 {
-	if(x<0 || x>SCREEN_WIDTH || y<0) // remove ‘|| y<0’
+	if(x<0 || x>SCREEN_WIDTH || y<0)
 	return 1;
-	// let the player drop of the bottom of the screen
-	// (this means death)
 	if(y>SCREEN_HEIGHT)
-	return 0;
+	return 1;
 	return cellAtTileCoord(layer, p2t(x), p2t(y));
 };
-function cellAtTileCoord(layer, tx, ty) // remove ‘|| y<0’
+function cellAtTileCoord(layer, tx, ty)
 {
 	if(tx<0 || tx>=MAP.tw || ty<0)
 	return 1;
-	// let the player drop of the bottom of the screen
-	// (this means death)
 	if(ty>=MAP.th)
 		return 1;
 	if(ty>=MAP.th-1)
@@ -192,7 +189,8 @@ function cellAtTileCoord(layer, tx, ty) // remove ‘|| y<0’
 };
 function loseHP()
 {
-	if(HPTimer <= 0){
+	if(HPTimer <= 0)
+	{
 		HP -= 5
 		HPTimer = 1
 	}
@@ -200,9 +198,24 @@ function loseHP()
 
 function loseHP2()
 {
-	if(HPTimer <= 0){
+	if(HPTimer <= 0)
+	{
 		HP -= 7
 		HPTimer = 1
+	}
+}
+
+function reload(deltaTime)
+{
+	if(reloadTimer >0)
+	{
+		reloadTimer -= deltaTime;
+		console.log(reloadTimer)
+	}
+	else
+	{
+		AMMO = 32;
+		reloadTimer = 2;
 	}
 }
 
@@ -350,6 +363,10 @@ function runGame(deltaTime)
 	}
 	drawMap();
 	player.draw();
+	if(AMMO <= 0)
+	{
+		reload(deltaTime);
+	}
 
 	// update the frame counter
 	fpsTime += deltaTime;

@@ -77,31 +77,32 @@ Player.prototype.update = function(deltaTime)
 		}
 	}
 	if(keyboard.isKeyDown(keyboard.KEY_UP) == true /*&& this.falling = false*/) {
-	jump = true;
-	if(left == true) {
-		this.sprite.setAnimation(ANIM_JUMP_LEFT);
+		jump = true;
+		if(left == true) {
+			this.sprite.setAnimation(ANIM_JUMP_LEFT);
+		}
+		if(right == true) {
+			this.sprite.setAnimation(ANIM_JUMP_RIGHT);
+		} 
 	}
-	if(right == true) {
-		this.sprite.setAnimation(ANIM_JUMP_RIGHT);
-	} 
 	if(this.cooldownTimer > 0)
 	{
 		this.cooldownTimer -= deltaTime;
 	}
-	}
-	if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true && this.cooldownTimer <= 0) {
+	if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true && this.cooldownTimer <= 0 && AMMO >0) {
 		fireSFX.play();
-		this.cooldownTimer = 0.3;
-		if(RIGHT == 1)
+		this.cooldownTimer = 0.1;
+		if(this.direction == RIGHT)
 		{
-			var b = new Bullet(this.position.x, this.position.y - 20, true);
+			var b = new Bullet(this.position.x, this.position.y - 10, true);
 			bullets.push(b);
 		}
-		if(LEFT == 1)
+		if(this.direction == LEFT)
 		{
-			var b = new Bullet(this.position.x, this.position.y - 20, false);
+			var b = new Bullet(this.position.x, this.position.y - 10, false);
 			bullets.push(b);
 		}
+		AMMO -= 2;
 		// Shoot a bullet
 	}
 
