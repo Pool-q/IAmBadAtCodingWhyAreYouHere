@@ -114,7 +114,6 @@ function initialise() //define the function
 		buffer: true,
 		volume: 0.5
 	} );
-	music.play();
 	fireSFX = new Howl(
 	{
 		urls: ["fireEffect.ogg"],
@@ -172,7 +171,7 @@ var keyboard = new Keyboard();
 function cellAtPixelCoord(layer, x,y)
 {
 	if(x<0 || x>SCREEN_WIDTH || y<0)
-	return 1;
+	return 0;
 	if(y>SCREEN_HEIGHT)
 	return 1;
 	return cellAtTileCoord(layer, p2t(x), p2t(y));
@@ -180,7 +179,7 @@ function cellAtPixelCoord(layer, x,y)
 function cellAtTileCoord(layer, tx, ty)
 {
 	if(tx<0 || tx>=MAP.tw || ty<0)
-	return 1;
+	return 0;
 	if(ty>=MAP.th)
 		return 1;
 	if(ty>=MAP.th-1)
@@ -304,6 +303,7 @@ function runSplash(deltaTime)
 	splashTimer -= deltaTime;
 	if(splashTimer<=0)
 	{
+		music.play();
 		gameState = STATE_GAME;
 		return;
 	}
@@ -406,11 +406,13 @@ function runGame(deltaTime)
 	}
 	if(win == true)
 	{
+		music.stop();
 		gameState = STATE_WIN;
 		return;
 	}
-	if(HP<=0)
+	if(HP<=0 || player.position.y >700)
 	{
+		music.stop();
 		gameState = STATE_LOSE;
 		return;
 	}
