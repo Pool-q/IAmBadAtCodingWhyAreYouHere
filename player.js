@@ -26,7 +26,7 @@ var Player = function() {
 		this.sprite.setAnimationOffset(i, -55, -87);
 	}
 	this.position = new Vector2();
-	this.position.set(9*TILE, 0*TILE);
+	this.position.set(9*TILE, 2*TILE);
 	this.width = 159;
 	this.height = 163;
 
@@ -76,7 +76,7 @@ Player.prototype.update = function(deltaTime)
 			}
 		}
 	}
-	if(keyboard.isKeyDown(keyboard.KEY_UP) == true /*&& this.falling = false*/) {
+	if(keyboard.isKeyDown(keyboard.KEY_UP) == true && this.falling == false) {
 		jump = true;
 		if(left == true) {
 			this.sprite.setAnimation(ANIM_JUMP_LEFT);

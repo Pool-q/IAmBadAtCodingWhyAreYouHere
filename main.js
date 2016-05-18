@@ -71,7 +71,7 @@ var STATE_WIN = 2;
 var STATE_LOSE = 3;
 var gameState = STATE_SPLASH;
 var splashTimer = 3;
-var reloadTimer = 0;
+var reloadTimer = 2;
 
 var ammunition = document.createElement("img");
 ammunition.src = "AMMO.jpg"
@@ -343,14 +343,14 @@ function runGame(deltaTime)
 		for(var j=0; j<enemies.length; j++)
 		{
 			if(intersects( bullets[i].position.x, bullets[i].position.y, TILE, TILE,
-				enemies[j].position.x, enemies[j].position.y, enemies[j].width, enemies[j].height) == true)
+				(enemies[j].position.x - (enemies[j].width/2)), (enemies[j].position.y - (enemies[j].height/2)), enemies[j].width, enemies[j].height) == true)
 			{
 				// kill both the bullet and the enemy
 				enemies.splice(j, 1);
 				console.log ("hit")
 				hit = true;
 				// increment the player score
-				score += 1;
+				score += 50;
 				break;
 			}
 		}
@@ -429,7 +429,7 @@ function runLose(deltaTime)
 	context.fillRect(0, 0, canvas.width, canvas.height);
 	context.fillStyle = "#FFFFFF";
 	context.font="24px Arial";
-	context.fillText("RIP in pizza", 450, 305)
+	context.fillText("Defeat", 470, 305)
 }
 function run()
 {
