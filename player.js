@@ -164,6 +164,7 @@ Player.prototype.update = function(deltaTime)
 // below or above, in which case, stop their vertical velocity, and clamp their
 // y position:
 	if (this.velocity.y > 0) {
+		this.falling = true;
 		if ((celldown && !cell) || (celldiag && !cellright && nx)) {
 		// clamp the y position to avoid falling into platform below
 		this.position.y = tileToPixel(ty);
