@@ -321,9 +321,9 @@ function runGame(deltaTime)
 	{
 		enemies[i].update(deltaTime);
 		if(intersects(
-    		enemies[i].position.x, enemies[i].position.y,
-    		TILE, TILE,
-    		player.position.x, player.position.y,
+    		enemies[i].position.x - TILE, enemies[i].position.y - TILE,
+    		2*TILE, 2*TILE,
+    		player.position.x - player.width/2, player.position.y - player.height/2,
     		player.width, player.height) == true)
     	{
     		loseHP2();
@@ -363,6 +363,9 @@ function runGame(deltaTime)
 	}
 	drawMap();
 	player.draw();
+	//context.fillStyle = "#F00"
+	//context.fillRect(player.position.x -player.width/2 - worldOffsetX, player.position.y - player.height/2, player.width, player.height);
+	//context.fillRect(enemies[i].position.x - worldOffsetX, enemies[i].position.y, TILE, TILE);
 	if(AMMO <= 0)
 	{
 		reload(deltaTime);

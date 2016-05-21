@@ -92,14 +92,15 @@ Player.prototype.update = function(deltaTime)
 	if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true && this.cooldownTimer <= 0 && AMMO >0) {
 		fireSFX.play();
 		this.cooldownTimer = 0.2;
-		if(this.direction == RIGHT)
-		{
-			var b = new Bullet(this.position.x, this.position.y - 10, true);
-			bullets.push(b);
-		}
+
 		if(this.direction == LEFT)
 		{
 			var b = new Bullet(this.position.x, this.position.y - 10, false);
+			bullets.push(b);
+		}
+		else
+		{
+			var b = new Bullet(this.position.x, this.position.y - 10, true);
 			bullets.push(b);
 		}
 		AMMO -= 2;

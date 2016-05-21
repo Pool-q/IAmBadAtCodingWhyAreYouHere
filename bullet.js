@@ -11,9 +11,9 @@ var Bullet = function(x, y, moveRight)
 	this.width = 32
 	this.height = 32
 	if(this.moveRight == true)
-		this.velocity.set(MAXDX *2, 0);
+		this.velocity.set(MAXDX *4, 0);
 	if(this.moveRight == false)
-		this.velocity.set(-MAXDX *2, 0);
+		this.velocity.set(-MAXDX *4, 0);
 }
 
 Bullet.prototype.update = function(dt)
